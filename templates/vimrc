@@ -121,3 +121,8 @@ nmap [ :vertical res -2<CR> " vertical decrease pane by 2
 
 " Remove highlight
 map <C-h> :nohl<CR>
+
+" bind \ (backward slash) to grep shortcut
+nnoremap K :Ag <C-R><C-W><CR>
+nnoremap <C-k> /<C-R><C-W><CR>
+nnoremap \ :Ag<SPACE>
