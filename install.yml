@@ -1,0 +1,108 @@
+- hosts: localhost
+  tasks:
+    - name: Install sudo and zsh for debian
+      apt:
+        name:
+          - sudo
+          - zsh
+        state: present
+    - name: Change shell to zsh for debian
+      shell: chsh -s `which zsh`
+      when: ansible_os_family == 'Debian'
+    - name: Update package cache
+      package:
+        update_cache: yes
+      become: yes
+      when: ansible_os_family == 'Debian'
+
+    - name: Install packages with package manager
+      become: yes
+      package:
+        name:
+          # - visual-studio-code
+          - zsh
+          - fzf
+          - tmux
+          - git
+          - neovim
+
+    - name: Install packages for ubuntu
+      become: yes
+      package:
+        name:
+          - silversearcher-ag
+      when: ansible_os_family == 'Debian'
+
+    - name: Install packages for macOS
+      become: yes
+      package:
+        name:
+          - iterm2
+          - nvm
+          - the_silver_searcher
+      when: ansible_os_family == 'Darwin'
+
+    - name: Install oh-my-zsh
+      ansible.builtin.git:
+        repo: 'https://github.com/robbyrussell/oh-my-zsh'
+        dest: '~/.oh-my-zsh'
+        depth: 1
+
+    - name: Install zsh plugin autosuggestions
+      ansible.builtin.git:
+        repo: 'https://github.com/zsh-users/zsh-autosuggestions'
+        dest: '~/.oh-my-zsh/custom/plugins/zsh-autosuggestions'
+
+    - name: Install powerlevel10k font for oh-my-zsh
+      ansible.builtin.git:
+        repo: 'https://github.com/romkatv/powerlevel10k.git'
+        dest: '~/.oh-my-zsh/custom/themes/powerlevel10k'
+        depth: 1
+
+    - name: Install thefuck plugin for ohmyzsh
+      ansible.builtin.git:
+        repo: 'https://github.com/ohmyzsh/ohmyzsh.git'
+        dest: '~/.oh-my-zsh/custom/plugins/thefuck'
+        depth: 1
+
+    - name: Install syntax higlihting plugin for ohmyzsh
+      ansible.builtin.git:
+        repo: 'https://github.com/zsh-users/zsh-syntax-highlighting.git'
+        dest: '~/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting'
+
+    - name: nvm
+      shell: >
+        curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | bash
+      args:
+        creates: '{{ ansible_env.HOME }}/.nvm/nvm.sh'
+
+    - name: Write .zshrc config
+      template:
+        src: ./templates/zshrc
+        dest: $HOME/.zshrc
+
+    - name: Write .vimrc.bundles config
+      template:
+        src: ./templates/vimrc.bundles
+        dest: $HOME/.vimrc.bundles
+
+    - name: Download plug.vim to autoload directory
+      shell: >
+        curl -fLo ~/.vim/autoload/plug.vim --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+
+    - name: Ensure .config/nvim dir exists
+      file: path=$HOME/.config/nvim state=directory
+
+    - name: Write vimrc config
+      template:
+        src: ./templates/vimrc
+        dest: $HOME/.vimrc
+    - name: Write vimrc to nvim/init.vim
+      template:
+        src: ./templates/vimrc
+        dest: $HOME/.config/nvim/init.vim
+
+    - name: Write tmux config
+      template:
+        src: ./templates/tmux.conf
+        dest: $HOME/.tmux.conf
