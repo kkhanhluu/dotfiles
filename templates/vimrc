@@ -54,9 +54,6 @@ set diffopt+=vertical
 " Copy to clipboard
 set clipboard=unnamed
 
-set lazyredraw
-set termguicolors
-
 filetype plugin indent on
 
 " Switch syntax highlighting on, when the terminal has colors
@@ -126,3 +123,4 @@ map <C-h> :nohl<CR>
 nnoremap K :Ag <C-R><C-W><CR>
 nnoremap <C-k> /<C-R><C-W><CR>
 nnoremap \ :Ag<SPACE>
+
