@@ -19,8 +19,6 @@ set autoread
 set autowrite
 
 " Softtabs, 2 spaces
-set smarttab
-set cindent
 set tabstop=2
 set shiftwidth=2
 set shiftround
@@ -54,6 +52,11 @@ set diffopt+=vertical
 " Copy to clipboard
 set clipboard=unnamed
 
+set lazyredraw
+set termguicolors
+
+set background=dark
+
 filetype plugin indent on
 
 " Switch syntax highlighting on, when the terminal has colors
@@ -76,9 +79,6 @@ augroup vimrcEx
         \   exe "normal g`\"" |
         \ endif
 augroup END
-
-autocmd BufEnter *.{js,jsx,ts,tsx} :syntax sync fromstart
-autocmd BufLeave *.{js,jsx,ts,tsx} :syntax sync clear
 
 " Go file config
 au FileType go set noexpandtab
@@ -119,8 +119,99 @@ nmap [ :vertical res -2<CR> " vertical decrease pane by 2
 " Remove highlight
 map <C-h> :nohl<CR>
 
+" NERD tree configuration
+noremap <C-d> :NERDTreeToggle<CR>
+nnoremap F :NERDTreeFind<CR>
+
+let NERDTreeShowHidden=1
+
+" fzf
+noremap ` :Files<CR>
+noremap ; :Buffers<CR>
+
 " bind \ (backward slash) to grep shortcut
 nnoremap K :Ag <C-R><C-W><CR>
 nnoremap <C-k> /<C-R><C-W><CR>
 nnoremap \ :Ag<SPACE>
 
+" coc.vim config
+" Remap keys for gotos
+" GoTo code navigation.
+nmap <silent> gd <Plug>(coc-definition)
+nmap <silent> gy <Plug>(coc-type-definition)
+nmap <silent> gi <Plug>(coc-implementation)
+nmap <silent> gr <Plug>(coc-references)
+
+" Use `[g` and `]g` to navigate diagnostics
+" Use `:CocDiagnostics` to get all diagnostics of current buffer in location list.
+nmap <silent> [g <Plug>(coc-diagnostic-prev)
+nmap <silent> ]g <Plug>(coc-diagnostic-next)
+
+nmap <silent> rn <Plug>(coc-rename)
+
+nnoremap R :CocCommand <CR>
+
+" Use `:Format` to format current buffer
+command! -nargs=0 Format :call CocAction('format')
+
+nmap <Leader>f :Format <CR>
+
+" Apply AutoFix to problem on the current line.
+nmap <leader>fc  <Plug>(coc-fix-current)
+
+" Easymotion
+" s{char}{char} to move to {char}{char} over windows
+nmap <Leader>F <Plug>(easymotion-overwin-f)
+" Move to line over windows
+nmap <Leader>L <Plug>(easymotion-overwin-line)
+" Search n-chars
+map / <Plug>(easymotion-sn)
+
+" Lightline
+let g:lightline = {
+      \ 'colorscheme': 'darcula',
+      \ 'active': {
+      \   'left': [ [ 'mode', 'paste' ],
+      \             [ 'gitbranch', 'cocstatus', 'readonly', 'filename', 'modified' ] ],
+      \   'right': [ [ 'lineinfo', 'percent' ],
+      \              [ 'fileformat', 'fileencoding', 'filetype' ] ]
+      \ },
+      \ 'separator': { 'left': '', 'right': '' },
+      \ 'subseparator': { 'left': '', 'right': '' },
+      \ 'component_function': {
+      \   'gitbranch': 'fugitive#head',
+      \   'cocstatus': 'coc#status'
+      \ },
+      \ }
+
+" Multi select
+let g:multi_cursor_next_key='<C-n>'
+let g:multi_cursor_prev_key='<C-p>'
+let g:multi_cursor_skip_key='<C-x>'
+
+" fzf.vim
+" Customize fzf colors to match your color scheme
+let g:fzf_colors =
+\ { 'fg':      ['fg', 'Normal'],
+  \ 'bg':      ['bg', 'Normal'],
+  \ 'hl':      ['fg', 'Comment'],
+  \ 'fg+':     ['fg', 'CursorLine', 'CursorColumn', 'Normal'],
+  \ 'bg+':     ['bg', 'CursorLine', 'CursorColumn'],
+  \ 'hl+':     ['fg', 'Statement'],
+  \ 'info':    ['fg', 'PreProc'],
+  \ 'border':  ['fg', 'Ignore'],
+  \ 'prompt':  ['fg', 'Conditional'],
+  \ 'pointer': ['fg', 'Exception'],
+  \ 'marker':  ['fg', 'Keyword'],
+  \ 'spinner': ['fg', 'Label'],
+  \ 'header':  ['fg', 'Comment'] }
+
+" Auto close tag
+let g:closetag_filenames = '*.html,*.js,*.jsx,*.vue'
+let g:closetag_emptyTags_caseSensitive = 1
+let g:jsx_ext_required = 0
+
+" Local config
+if filereadable($HOME . "/.vimrc.local")
+  source ~/.vimrc.local
+endif
